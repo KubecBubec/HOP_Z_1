@@ -199,11 +199,9 @@ def main():
             elif choice == '3':
                 show_summary()
             elif choice == '4':
-                run_simple_tests()
-            elif choice == '5':
                 show_project_info()
             else:
-                print("\n✗ Neplatná voľba! Prosím vyberte číslo 0-5.")
+                print("\n✗ Neplatná voľba! Prosím vyberte číslo 0-4.")
                 input("Stlačte Enter pre pokračovanie...")
         
         except KeyboardInterrupt:
