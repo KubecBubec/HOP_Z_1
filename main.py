@@ -27,8 +27,7 @@ def print_menu():
     print("1. Spustiť experimenty (experiments.py)")
     print("2. Vizualizovať výsledky a vytvoriť grafy (visualize_results.py)")
     print("3. Zobraziť súhrn výsledkov (textový výstup)")
-    print("4. Spustiť jednoduché testy (test_simple.py)")
-    print("5. Zobraziť informácie o projekte")
+    print("4. Zobraziť informácie o projekte")
     print("0. Ukončiť program")
     print("-" * 70)
 
@@ -136,30 +135,6 @@ def show_summary():
         input("\nStlačte Enter pre pokračovanie...")
 
 
-def run_simple_tests():
-    """Spustí jednoduché testy"""
-    print("\n" + "="*70)
-    print("SPUSTENIE JEDNODUCHÝCH TESTOV")
-    print("="*70)
-    
-    if not os.path.exists('test_simple.py'):
-        print("\n✗ Súbor 'test_simple.py' nebol nájdený!")
-        input("\nStlačte Enter pre pokračovanie...")
-        return
-    
-    try:
-        import subprocess
-        result = subprocess.run([sys.executable, 'test_simple.py'], 
-                              capture_output=False)
-        print("\n✓ Testy dokončené!")
-        input("\nStlačte Enter pre pokračovanie...")
-    except Exception as e:
-        print(f"\n✗ Chyba pri spúšťaní testov: {e}")
-        import traceback
-        traceback.print_exc()
-        input("\nStlačte Enter pre pokračovanie...")
-
-
 def show_project_info():
     """Zobrazí informácie o projekte"""
     print("\n" + "="*70)
@@ -179,7 +154,6 @@ optimalizačných problémov. Algoritmus rozdeľuje komplexný problém na menš
 - problems.py                 - Testovacie problémy (Rastrigin, Model)
 - experiments.py              - Spúšťanie experimentov
 - visualize_results.py        - Vizualizácia výsledkov
-- test_simple.py              - Jednoduché testy
 - CODE_EXPLANATION.md         - Detailné vysvetlenie kódu
 - REPORT.md                   - Správa o projekte
 
