@@ -32,8 +32,7 @@ Toto zobrazí interaktívne menu s nasledujúcimi možnosťami:
 1. **Spustiť experimenty** - Spustí všetky experimenty s rôznymi konfiguráciami
 2. **Vizualizovať výsledky** - Vytvorí grafy a tabuľky z výsledkov
 3. **Zobraziť súhrn výsledkov** - Textový výstup štatistík
-4. **Spustiť jednoduché testy** - Rýchle testy funkčnosti
-5. **Zobraziť informácie o projekte** - Dokumentácia a pomoc
+4. **Zobraziť informácie o projekte** - Dokumentácia a pomoc
 
 ### 📋 Manuálne spustenie jednotlivých skriptov
 
