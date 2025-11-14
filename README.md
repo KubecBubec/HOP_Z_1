@@ -1,6 +1,6 @@
 # Kooperatívne koevolučné algoritmy
 
-Implementácia kooperatívneho koevolučného algoritmu (Cooperative Coevolutionary Algorithm - CCEA) pre riešenie optimalizačných problémov.
+Zadanie 1 z HOP - Implementácia kooperatívneho koevolučného algoritmu (Cooperative Coevolutionary Algorithm - CCEA) pre riešenie optimalizačných problémov.
 
 ## Štruktúra projektu
 
@@ -57,4 +57,3 @@ Algoritmus podporuje nasledujúce parametre:
 - `mutation_rate` - Pravdepodobnosť mutácie
 - `crossover_rate` - Pravdepodobnosť kríženia
 - `collaboration_size` - Počet partnerov pri hodnotení (1 = best, >1 = random)
-
