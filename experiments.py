@@ -1,10 +1,11 @@
 """
 Experimenty pre testovanie kooperatívneho koevolučného algoritmu
+
+Tento skript spúšťa experimenty s rôznymi konfiguráciami a zbiera výsledky.
 """
 
 import numpy as np
 import time
-from typing import Dict, List, Tuple
 import json
 from cooperative_coevolution import CooperativeCoevolution
 from problems import (
@@ -18,36 +19,42 @@ from problems import (
 class ExperimentRunner:
     """Spúšťa experimenty a zbiera výsledky"""
     
-    def __init__(self, num_runs: int = 10):
+    def __init__(self, num_runs=10):
+        # Koľkokrát spustíme každý experiment (pre spoľahlivejšie výsledky)
         self.num_runs = num_runs
+        # Zoznam všetkých výsledkov
         self.results = []
     
-    def run_experiment(
-        self,
-        problem_name: str,
-        fitness_function,
-        dimensions: int,
-        bounds: Tuple[float, float],
-        config: Dict
-    ) -> Dict:
-        """Spustí experiment s danou konfiguráciou"""
+    def run_experiment(self, problem_name, fitness_function, dimensions, bounds, config):
+        """
+        Spustí experiment s danou konfiguráciou
         
+        Parametre:
+        - problem_name: názov problému (napr. "Rastrigin")
+        - fitness_function: funkcia na hodnotenie
+        - dimensions: počet dimenzií
+        - bounds: hranice pre hodnoty
+        - config: slovník s konfiguráciou algoritmu
+        """
         print(f"\n{'='*60}")
         print(f"Experiment: {problem_name}")
         print(f"Konfigurácia: {config}")
         print(f"{'='*60}\n")
         
-        all_fitnesses = []
-        all_solutions = []
-        all_times = []
-        convergence_data = []
+        # Zoznamy pre ukladanie výsledkov zo všetkých behov
+        all_fitnesses = []      # všetky fitness hodnoty
+        all_solutions = []      # všetky riešenia
+        all_times = []          # všetky časy behu
+        convergence_data = []   # história konvergencie pre každý beh
         
+        # Spustíme experiment viackrát
         for run in range(self.num_runs):
             print(f"Beh {run + 1}/{self.num_runs}")
             
+            # Zmeriame čas
             start_time = time.time()
             
-            # Vytvoriť algoritmus
+            # Vytvoríme algoritmus s danou konfiguráciou
             ccea = CooperativeCoevolution(
                 fitness_function=fitness_function,
                 dimensions=dimensions,
@@ -60,11 +67,13 @@ class ExperimentRunner:
                 collaboration_size=config['collaboration_size']
             )
             
-            # Spustiť algoritmus
+            # Spustíme algoritmus
             best_solution, best_fitness = ccea.run()
             
+            # Zmeriame čas behu
             elapsed_time = time.time() - start_time
             
+            # Uložíme výsledky
             all_fitnesses.append(best_fitness)
             all_solutions.append(best_solution)
             all_times.append(elapsed_time)
@@ -72,30 +81,40 @@ class ExperimentRunner:
             
             print(f"  Fitness: {best_fitness:.6f}, Čas: {elapsed_time:.2f}s\n")
         
-        # Štatistiky
+        # Vypočítame štatistiky
         fitnesses_array = np.array(all_fitnesses)
         
+        # Vytvoríme slovník s výsledkami
         results = {
             'problem': problem_name,
             'config': config,
             'num_runs': self.num_runs,
-            'fitness_mean': float(np.mean(fitnesses_array)),
-            'fitness_std': float(np.std(fitnesses_array)),
-            'fitness_min': float(np.min(fitnesses_array)),
-            'fitness_max': float(np.max(fitnesses_array)),
-            'time_mean': float(np.mean(all_times)),
-            'time_std': float(np.std(all_times)),
-            'convergence': self._average_convergence(convergence_data),
-            'all_fitnesses': [float(f) for f in all_fitnesses]
+            'fitness_mean': float(np.mean(fitnesses_array)),      # priemer
+            'fitness_std': float(np.std(fitnesses_array)),       # štandardná odchýlka
+            'fitness_min': float(np.min(fitnesses_array)),       # minimum
+            'fitness_max': float(np.max(fitnesses_array)),       # maximum
+            'time_mean': float(np.mean(all_times)),              # priemerný čas
+            'time_std': float(np.std(all_times)),                # štandardná odchýlka času
+            'convergence': self._average_convergence(convergence_data),  # priemerná konvergencia
+            'all_fitnesses': [float(f) for f in all_fitnesses]   # všetky fitness hodnoty
         }
         
         return results
     
-    def _average_convergence(self, convergence_data: List[List[float]]) -> List[float]:
-        """Vypočíta priemernú konvergenciu cez všetky behy"""
-        max_gen = max(len(conv) for conv in convergence_data)
-        averaged = []
+    def _average_convergence(self, convergence_data):
+        """
+        Vypočíta priemernú konvergenciu cez všetky behy
         
+        convergence_data: zoznam zoznamov - každý zoznam obsahuje históriu jedného behu
+        """
+        # Nájdeme najdlhšiu históriu
+        max_gen = 0
+        for conv in convergence_data:
+            if len(conv) > max_gen:
+                max_gen = len(conv)
+        
+        # Pre každú generáciu vypočítame priemer cez všetky behy
+        averaged = []
         for gen in range(max_gen):
             values = []
             for conv in convergence_data:
@@ -106,7 +125,7 @@ class ExperimentRunner:
         
         return averaged
     
-    def print_results(self, results: Dict):
+    def print_results(self, results):
         """Vytlačí výsledky experimentu"""
         print(f"\n{'='*60}")
         print(f"Výsledky: {results['problem']}")
@@ -125,6 +144,7 @@ class ExperimentRunner:
 def main():
     """Hlavná funkcia pre spustenie experimentov"""
     
+    # Vytvoríme runner, ktorý spustí každý experiment 10-krát
     runner = ExperimentRunner(num_runs=10)
     all_results = []
     
@@ -140,7 +160,7 @@ def main():
     fitness_func, dims, bounds = get_rastrigin_problem(dimensions)
     optimal_value = get_optimal_value_rastrigin(dimensions)
     
-    # Konfigurácie pre testovanie
+    # Rôzne konfigurácie pre testovanie
     configs = [
         {
             'name': 'Základná konfigurácia',
@@ -189,9 +209,16 @@ def main():
         }
     ]
     
+    # Spustíme každú konfiguráciu
     for config in configs:
         config_name = config['name']
-        config_copy = {k: v for k, v in config.items() if k != 'name'}
+        # Vytvoríme kópiu konfigurácie bez názvu (ten nepotrebujeme v algoritme)
+        config_copy = {}
+        for k, v in config.items():
+            if k != 'name':
+                config_copy[k] = v
+        
+        # Spustíme experiment
         result = runner.run_experiment(
             problem_name=f"Rastrigin - {config_name}",
             fitness_function=fitness_func,
@@ -199,9 +226,13 @@ def main():
             bounds=bounds,
             config=config_copy
         )
+        
+        # Pridáme názov konfigurácie a optimálnu hodnotu
         result['config_name'] = config_name
         result['optimal_value'] = optimal_value
         all_results.append(result)
+        
+        # Vytlačíme výsledky
         runner.print_results(result)
     
     # ========================================================================
@@ -216,7 +247,7 @@ def main():
     fitness_func, dims, bounds = get_model_optimization_problem(dimensions)
     optimal_value = get_optimal_value_model(dimensions)
     
-    # Konfigurácie pre testovanie
+    # Rôzne konfigurácie pre testovanie
     configs = [
         {
             'name': 'Základná konfigurácia',
@@ -256,9 +287,16 @@ def main():
         }
     ]
     
+    # Spustíme každú konfiguráciu
     for config in configs:
         config_name = config['name']
-        config_copy = {k: v for k, v in config.items() if k != 'name'}
+        # Vytvoríme kópiu konfigurácie bez názvu
+        config_copy = {}
+        for k, v in config.items():
+            if k != 'name':
+                config_copy[k] = v
+        
+        # Spustíme experiment
         result = runner.run_experiment(
             problem_name=f"Model - {config_name}",
             fitness_function=fitness_func,
@@ -266,16 +304,20 @@ def main():
             bounds=bounds,
             config=config_copy
         )
+        
+        # Pridáme názov konfigurácie a optimálnu hodnotu
         result['config_name'] = config_name
         result['optimal_value'] = optimal_value
         all_results.append(result)
+        
+        # Vytlačíme výsledky
         runner.print_results(result)
     
     # ========================================================================
     # Uloženie výsledkov
     # ========================================================================
     
-    # Uložiť výsledky do JSON súboru
+    # Uložíme výsledky do JSON súboru
     with open('experiment_results.json', 'w') as f:
         json.dump(all_results, f, indent=2)
     
@@ -287,4 +329,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
